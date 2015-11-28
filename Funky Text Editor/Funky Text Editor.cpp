@@ -5,6 +5,8 @@
 #include "Funky Text Editor.h"
 
 #define MAX_LOADSTRING 100
+bool bDrawLine = false;
+bool bDrawEllipse = false;
 
 // Global Variables:
 HINSTANCE hInst;                                // current instance
@@ -121,55 +123,89 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    switch (message)
-    {
-    case WM_COMMAND:
-        {
-            int wmId = LOWORD(wParam);
-            // Parse the menu selections:
-            switch (wmId)
-            {
-            case IDM_ABOUT:
-                DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
-                break;
-            case IDM_EXIT:
-                DestroyWindow(hWnd);
-                break;
-            default:
-                return DefWindowProc(hWnd, message, wParam, lParam);
-            }
-        }
-        break;
+	switch (message)
+	{
+	case WM_COMMAND:
+	{
+		int wmId = LOWORD(wParam);
+		// Parse the menu selections:
+		switch (wmId)
+		{
+		case IDM_ABOUT:
+			//DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
+			::MessageBox(hWnd, _T("Message"), _T("Title"), MB_YESNO);
+			break;
+		case IDM_EXIT:
+			DestroyWindow(hWnd);
+			break;
+		case IDM_LINE:
+			bDrawLine = !bDrawLine;
+			InvalidateRect(hWnd, 0, TRUE);
+			break;
+		case IDM_ELLIPSE:
+			bDrawEllipse = !bDrawEllipse;
+			InvalidateRect(hWnd, 0, TRUE);
+			break;
+		default:
+			return DefWindowProc(hWnd, message, wParam, lParam);
+		}
+	}
+	break;
+	case WM_LBUTTONDOWN:
+	{
+		int iPosX = LOWORD(lParam);
+		int iPosY = HIWORD(lParam);
+		wchar_t waCoord[20];
+		wsprintf(waCoord, _T("(%i, %i)"), iPosX, iPosY);
+		::MessageBox(hWnd, waCoord, _T("LMB Click"), MB_OK);
+		break;
+	}
+	case WM_KEYUP:
+		switch (wParam)
+		{
+		default:
+			break;
+		case VK_LEFT:
+			::MessageBox(hWnd, _T("Left Arrow"), _T("Key Pressed"), MB_OK);
+			break;
+		}
+		break;
     case WM_PAINT:
         {
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
             // TODO: Add any drawing code that uses hdc here...
 			HPEN hPenOld;
-			//Draw a red line
-			HPEN hLinePen;
-			COLORREF qLineColor;
-			qLineColor = RGB(255, 0, 0);
-			hLinePen = CreatePen(PS_SOLID, 7, qLineColor);
-			hPenOld = (HPEN)SelectObject(hdc, hLinePen);
+			if (bDrawLine)
+			{
+				//Draw a red line
+				HPEN hLinePen;
+				COLORREF qLineColor;
+				qLineColor = RGB(255, 0, 0);
+				hLinePen = CreatePen(PS_SOLID, 7, qLineColor);
+				hPenOld = (HPEN)SelectObject(hdc, hLinePen);
 
-			MoveToEx(hdc, 100, 100, NULL);
-			LineTo(hdc, 500, 250);
+				MoveToEx(hdc, 100, 100, NULL);
+				LineTo(hdc, 500, 250);
 
-			SelectObject(hdc, hPenOld);
-			DeleteObject(hLinePen);
+				SelectObject(hdc, hPenOld);
+				DeleteObject(hLinePen);
+			}
 
-			//Draw a cyan ellipse
-			HPEN hEllipsePen;
-			COLORREF qEllipseColor;
-			qEllipseColor = RGB(0, 255, 255);
-			hEllipsePen = CreatePen(PS_COSMETIC, 5, qEllipseColor);
-			hPenOld = (HPEN)SelectObject(hdc, hEllipsePen);
+			if (bDrawEllipse)
+			{
+				//Draw a cyan ellipse
+				HPEN hEllipsePen;
+				COLORREF qEllipseColor;
+				qEllipseColor = RGB(0, 255, 255);
+				hEllipsePen = CreatePen(PS_COSMETIC, 5, qEllipseColor);
+				hPenOld = (HPEN)SelectObject(hdc, hEllipsePen);
 
-			Arc(hdc, 100, 100, 500, 250, 0, 0, 0, 0);
+				Arc(hdc, 100, 100, 500, 250, 0, 0, 0, 0);
 
-			SelectObject(hdc, hPenOld);
-			DeleteObject(hEllipsePen);
+				SelectObject(hdc, hPenOld);
+				DeleteObject(hEllipsePen);
+			}
 
             EndPaint(hWnd, &ps);
         }

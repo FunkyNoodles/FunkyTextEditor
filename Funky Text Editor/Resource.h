@@ -10,6 +10,8 @@
 #define IDD_ABOUTBOX			103
 #define IDM_ABOUT				104
 #define IDM_EXIT				105
+#define IDM_LINE				110
+#define IDM_ELLIPSE				111
 #define IDI_FUNKYTEXTEDITOR			107
 #define IDI_SMALL				108
 #define IDC_FUNKYTEXTEDITOR			109
